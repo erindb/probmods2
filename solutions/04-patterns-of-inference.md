@@ -23,6 +23,28 @@ var c = flip(a && b ? .8 : .5)
 
 ![](../assets/img/04_01_a.png)
 
+There is no causal dependency between A and B.
+
+Using conditioning, we can show that A and B are statistically independent:
+
+~~~~
+viz.table(Infer({method: "enumerate"}, function() {
+  var a = flip() 
+  var b = flip()
+  var c = flip(a && b ? .8 : .5)
+//   condition(a) // uncomment to see if there's a change
+  return b
+}))
+
+viz.table(Infer({method: "enumerate"}, function() {
+  var a = flip() 
+  var b = flip()
+  var c = flip(a && b ? .8 : .5)
+//   condition(b) // uncomment to see if there's a change
+  return a
+}))
+~~~~
+
 ### b)
 
 ~~~~ 
@@ -32,6 +54,29 @@ var c = flip(b ? .7 : .1)
 ~~~~
 
 ![](../assets/img/04_01_b.png)
+
+B depends causally on A.
+
+Using conditioning, we can show that A and B are statistically dependent:
+
+~~~~ 
+viz.table(Infer({method: "enumerate"}, function() {
+  var a = flip() 
+  var b = flip(a ? .9 : .2)
+  var c = flip(b ? .7 : .1)
+//   condition(a) // uncomment to see if there's a change
+  return(b)
+}))
+
+viz.table(Infer({method: "enumerate"}, function() {
+  var a = flip() 
+  var b = flip(a ? .9 : .2)
+  var c = flip(b ? .7 : .1)
+//   condition(b) // uncomment to see if there's a change
+  return(a)
+}))
+~~~~
+
 
 ### c)
 
@@ -43,6 +88,28 @@ var c = flip(a ? .7 : .1)
 
 ![](../assets/img/04_01_c.png)
 
+B depends causally on A.
+
+Using conditioning, we can show that A and B are statistically dependent:
+
+~~~~ 
+viz.table(Infer({method: "enumerate"}, function() {
+  var a = flip()
+  var b = flip(a ? .9 : .2)
+  var c = flip(a ? .7 : .1)
+//   condition(a) // uncomment to see if there's a change
+  return(b)
+}))
+
+viz.table(Infer({method: "enumerate"}, function() {
+  var a = flip()
+  var b = flip(a ? .9 : .2)
+  var c = flip(a ? .7 : .1)
+//   condition(b) // uncomment to see if there's a change
+  return(a)
+}))
+~~~~
+
 d)
 
 ~~~~ 
@@ -53,6 +120,30 @@ var b = z ? 'foo' : 'bar'
 ~~~~
 
 ![](../assets/img/04_01_d.png)
+
+B depends causally on A.
+
+Using conditioning, we can show that A and B are statistically dependent. Knowing the value of A changes our distribution over B.
+
+~~~~ 
+viz.table(Infer({method: "enumerate"}, function() {
+  var a = flip(.6)
+  var c = flip(.1)
+  var z = flip() ? a : c;
+  var b = z ? 'foo' : 'bar'
+//   condition(a) // uncomment to see if there's a change
+  return(b)
+}))
+
+viz.table(Infer({method: "enumerate"}, function() {
+  var a = flip(.6)
+  var c = flip(.1)
+  var z = flip() ? a : c;
+  var b = z ? 'foo' : 'bar'
+//   condition(b) // uncomment to see if there's a change
+  return(a)
+}))
+~~~~
 
 e)
 
@@ -72,6 +163,46 @@ var b = pass('bob', 'historyExam');
 ~~~~
 
 ![](../assets/img/04_01_e.png)
+
+There is no causal dependency between A and B.
+
+Using conditioning, we can show that A and B are statistically dependent:
+
+~~~~
+viz.table(Infer({method: "enumerate"}, function() {
+  var examFairPrior = Bernoulli({p: .8})
+  var doesHomeworkPrior = Bernoulli({p: .8})
+  var examFair = mem(function(exam) {return sample(examFairPrior)})
+  var doesHomework = mem(function(student) {return sample(doesHomeworkPrior)});
+
+  var pass = function(student, exam) {
+    return flip(examFair(exam) ?
+                (doesHomework(student) ? .9 : .5) :
+                (doesHomework(student) ? .2 : .1));
+  }
+  var a = pass('alice', 'historyExam');
+  var b = pass('bob', 'historyExam');
+//   condition(a) // uncomment to see if there's a change
+  return b
+}))
+
+viz.table(Infer({method: "enumerate"}, function() {
+  var examFairPrior = Bernoulli({p: .8})
+  var doesHomeworkPrior = Bernoulli({p: .8})
+  var examFair = mem(function(exam) {return sample(examFairPrior)})
+  var doesHomework = mem(function(student) {return sample(doesHomeworkPrior)});
+
+  var pass = function(student, exam) {
+    return flip(examFair(exam) ?
+                (doesHomework(student) ? .9 : .5) :
+                (doesHomework(student) ? .2 : .1));
+  }
+  var a = pass('alice', 'historyExam');
+  var b = pass('bob', 'historyExam');
+//   condition(b) // uncomment to see if there's a change
+  return a
+}))
+~~~~
 
 <!-- *Note:* Bayes nets often use plate notation for repeated structure across multiple entities (e.g. students and exams), but there is no standard notation for repeated structure when the repetitions are not nested. That is, `doesHomework` is memoized to `student` and `examFair` is memoized to `exam`. But for each `student`-`exam` pair we have a different value for `pass`. We can't represent that kind of shared structure in a Bayes net. -->
 

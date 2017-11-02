@@ -92,8 +92,8 @@ viz.table(Infer({method: 'enumerate'}, function() {
   return {cancer: cancer, cold: cold, death: death};
 }));
 ~~~~
-
-### a)
+<!-- 
+### a) -->
 
 > Compute $$p( \text{cancer} \mid \text{death} , \text{cold} )$$ and $$p( \text{cancer} \mid \text{death} , \text{no cold} )$$. How do these probabilities compare to $$p( \text{cancer} \mid \text{death} )$$ and $$p( \text{cancer} )$$? Using these probabilities, give an example of explaining away.
 
@@ -156,7 +156,7 @@ viz.table(Infer({method: 'enumerate'}, function() {
   return cancer;
 }));
 ~~~~
-
+<!-- 
 ### b)
 
 > Compute $$p( \text{cold} \mid \text{death} , \text{cancer} )$$ and $$p( \text{cold} \mid \text{death} , \text{no cancer} )$$. How do these probabilities compare to $$p( \text{cold} \mid \text{death} )$$ and $$p( \text{cold} )$$? Using these probabilities, give an example of explaining away.
@@ -220,3 +220,4 @@ viz.table(Infer({method: 'enumerate'}, function() {
   return cold;
 }));
 ~~~~
+ -->

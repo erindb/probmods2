@@ -27,6 +27,7 @@ I hand you one of the coins (either biased or fair) without telling you which.
 You flip it three times.
 
 Given that first two coin flips landed on heads, what is the posterior distribution for the next flip?
+Assume $$P(\text{fair})=0.5$$.
 
 ~~~~
 var model = function() {
@@ -39,9 +40,15 @@ viz(Infer({method:'enumerate'}, model))
 
 Given that all three flips landed on heads, what is the probability that the coin was biased?
 
+~~~~
+~~~~
+
 ### d)
 
 Given that the first two flips were different, what is the probability that the third flip will be heads?
+
+~~~~
+~~~~
 
 ## Exercise 2: Conditioning and Intervention
 
@@ -154,7 +161,7 @@ Infer({method: "enumerate"}, extendedSmilesModel)
 ~~~~
 
 
-Question 5: Sprinklers, Rain and mem
+## Exercise 5: Sprinklers, Rain and `mem`
 
 ### a)
 
@@ -173,7 +180,7 @@ Answer the following questions, either using the Rules of Probability or by writ
 
 ~~~~
 
-### c)
+### b)
 
 My neighbour Kelsey, who has the same kind of sprinkler, tells me that her lawn was also wet that same morning.
 What is the new posterior probability that it rained?
@@ -182,18 +189,21 @@ What is the new posterior probability that it rained?
 
 ~~~~
 
-### d)
+### c)
 
 To investigate further we poll a selection of our friends who live nearby, and ask if their grass was wet this morning.
 Kevin and Manu and Josh, each with the same sprinkler, all agree that their lawns were wet too.
-Using `mem`, write a model to reason about arbitrary numbers of people, and then use it to find the new probability that it rained.
+Using `mem`, write a model to reason about arbitrary numbers of people, and then use it to find:
+
+* the new probability that it rained
+* the new probability that *my* sprinkler went off
 
 ~~~~
 
 ~~~~
 
 
-## Exercise 5: Casino game
+## Exercise 6: Casino game
 
 Consider the following game.
 A machine randomly gives Bob a letter of the word "game"; it gives a, e (the vowels) with probability 0.45 each and the remaining letters (the consonants g, m) with probability 0.05 each.
@@ -206,10 +216,6 @@ Let's express this formally.
 Before we begin, a bit of terminology: the set of letters that Bob could have gotten, $$\{g, a, m, e\}$$, is called the *hypothesis space* -- it's our set of hypotheses about the letter.
 
 ### a)
-
-In English, what does the posterior probability $$p(h \mid \text{win})$$ represent?
-
-### b)
 
 Manually compute $$p(h \mid \text{win})$$ for each hypothesis.
 Remember to normalize --- make sure that summing all your $$p(h \mid \text{win})$$ values gives you 1.
@@ -237,8 +243,7 @@ Use `Categorical` to express this distribution:
 var distribution = Categorical(...)
 ~~~~ -->
 
-### d)
-
+### b)
 
 Now, we're going to write this model in WebPPL using `Infer`. Here is some starter code for you:
 
@@ -261,14 +266,13 @@ viz.auto(distribution);
 ~~~~
 
 Fill in the `...`'s in the code to compute $$p(h \mid \text{win})$$.
-Include a screenshot of the resulting graph.
 What letter has the highest posterior probability?
-In English, what does it mean that this letter has the highest posterior?
-It might be interesting to comment out the `condition` statement so you can compare visually the prior (no `condition` statement) to the posterior (with `condition`).
+<!-- In English, what does it mean that this letter has the highest posterior?
+It might be interesting to comment out the `condition` statement so you can compare visually the prior (no `condition` statement) to the posterior (with `condition`). -->
 
 Make sure that your WebPPL answers and hand-computed answers agree -- note that this demonstrates the equivalence between the program view of conditional probability and the distributional view.
 
-### e)
+### c)
 
 Which is higher, $$p(\text{vowel} \mid \text{win})$$ or $$p(\text{consonant} \mid \text{win})$$?
 Answer this using the WebPPL code you wrote *Hint:* use the `checkVowel` function.
@@ -291,11 +295,14 @@ var distribution = Infer({method: 'enumerate'}, function() {
 viz.auto(distribution);
 ~~~~
 
-### f)
+### d)
 
 What difference do you see between your code and the mathematical notation?
 What are the advantages and disadvantages of each?
 Which do you prefer?
+
+What if instead of the 4 letters of "game" Bob played a similar game with every letter of the alphabet?
+Which method would you prefer to make inferences about that version of the game?
 
 <!-- ## Question 1: Preliminaries
 

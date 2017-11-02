@@ -1,0 +1,14 @@
+digraph G {
+
+  examFairPrior -> examFair;
+
+  doesHomeworkPrior -> aliceDoesHomework;
+  doesHomeworkPrior -> bobDoesHomework;
+
+  aliceDoesHomework -> A
+  bobDoesHomework -> B
+
+  examFair -> A
+  examFair -> B
+  
+}

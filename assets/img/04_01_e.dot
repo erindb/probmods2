@@ -1,0 +1,28 @@
+digraph G {
+	doesHomeworkPrior;
+	examFairPrior -> examFair;
+
+	subgraph cluster_0 {
+		label = "historyExam"
+
+		subgraph cluster_1 {
+			alice_hw [label = "doesHomework"]
+			alice_pass [label = "A"]
+			alice_hw -> alice_pass
+			label = "alice"
+		}
+
+		subgraph cluster_2 {
+			bob_hw [label = "doesHomework"]
+			bob_pass [label = "B"]
+			bob_hw -> bob_pass
+			label = "bob"
+		}
+
+		examFair -> alice_pass
+		examFair -> bob_pass
+	}
+
+	doesHomeworkPrior -> alice_hw;
+	doesHomeworkPrior -> bob_hw;
+}

@@ -29,6 +29,7 @@ Math.exp(log_prob)
 > You flip it three times.
 >
 > Given that first two coin flips landed on heads, what is the posterior distribution for the next flip?
+> Assume $$P(\text{fair})=0.5$$.
 
 P(Heads) = 0.8056603773584906
 
@@ -329,7 +330,7 @@ Infer({method: "enumerate"}, extendedSmilesModel)
 
 We condition on all the data that we have; bob failed to smile 5 times before, but then smiled today. Again, critically, because wantsSomething is not memoized, each of these observations is independent. We have uncertainty over whether bob wanted something on *every* day, but we're only interested in whether he wanted something on the day that he smiled, thus why we store that value and return it at the end.
 
-## Question 5.5: Sprinklers, Rain and `mem`
+## Question 5: Sprinklers, Rain and `mem`
 
 ### a)
 
@@ -370,7 +371,7 @@ viz.table(Infer({method: "enumerate"}, function() {
 }))
 ~~~~
 
-### c)
+### b)
 
 > My neighbour Kelsey, who has the same kind of sprinkler, tells me that her lawn was also wet that same morning.
 > What is the new posterior probability that it rained?
@@ -393,9 +394,12 @@ viz.table(Infer({method: "enumerate"}, function() {
 
 > To investigate further we poll a selection of our friends who live nearby, and ask if their grass was wet this morning.
 > Kevin and Manu and Josh, each with the same sprinkler, all agree that their lawns were wet too.
-> Using `mem`, write a model to reason about arbitrary numbers of people, and then use it to find the new probability that it rained.
+> Using `mem`, write a model to reason about arbitrary numbers of people, and then use it to find:
+> 
+> * the new probability that it rained
+> * the new probability that *my* sprinkler went off
 
-$$P(rain) = 0.9320388349514566$$
+$$P(\text{rain}) = 0.9320388349514566$$
 
 ~~~~
 viz.table(Infer({method: "enumerate"}, function() {
@@ -409,7 +413,9 @@ viz.table(Infer({method: "enumerate"}, function() {
 }))
 ~~~~
 
-*Note:* We don't actually *have* to use `mem` here, because we're asking about rain. But if we instead wanted to reason about whether *my* sprinker went off, we can do that a lot more easily with the model that uses `mem`. E.g.
+<!-- *Note:* We don't actually *have* to use `mem` here, because we're asking about rain. But if we instead wanted to reason about whether *my* sprinker went off, we can do that a lot more easily with the model that uses `mem`. E.g. -->
+
+$$P(\text{my sprinkler}) = 0.769230769230769$$
 
 ~~~~
 viz.table(Infer({method: "enumerate"}, function() {
@@ -419,11 +425,11 @@ viz.table(Infer({method: "enumerate"}, function() {
   var wet_lawn = mem(function(person) {return rain || sprinkler(person);})
 
   condition(wet_lawn("me"), wet_lawn("Kelsey"), wet_lawn("Kevin"), wet_lawn("Manu"), wet_lawn("Josh"));
-  return wet_lawn("me");
+  return sprinkler("me");
 }))
 ~~~~
 
-## Exercise 5: Casino game
+## Exercise 6: Casino game
 
 > Consider the following game.
 > A machine randomly gives Bob a letter of the word "game"; it gives a, e (the vowels) with probability 0.45 each and the remaining letters (the consonants g, m) with probability 0.05 each.
@@ -436,12 +442,6 @@ viz.table(Infer({method: "enumerate"}, function() {
 > Before we begin, a bit of terminology: the set of letters that Bob could have gotten, $$\{g, a, m, e\}$$, is called the *hypothesis space* -- it's our set of hypotheses about the letter.
 
 ### a)
-
-> In English, what does the posterior probability $$p(h \mid \text{win})$$ represent?
-
-Given that Bob wins, which letter did he probably draw?
-
-### b)
 
 > Manually compute $$p(h \mid \text{win})$$ for each hypothesis.
 > Remember to normalize --- make sure that summing all your $$p(h \mid \text{win})$$ values gives you 1.
@@ -459,7 +459,7 @@ Let $$Z$$ be the sum of $$ P(h) \cdot P(\text{win} \mid h) $$ across all values 
 | m     | 0.05     | 1/9                      | 0.05/9 / Z = 0.028       |
 | e     | 0.45     | 1/16                     | 0.45/16 / Z = 0.143      |
 
-### d)
+### b)
 
 > Now, we're going to write this model in WebPPL using `Infer`. Here is some starter code for you:
 
@@ -489,15 +489,9 @@ viz.table(distribution);
 
 `a`
 
-> In English, what does it mean that this letter has the highest posterior?
-
-If we had to guess a letter, `a` would be the best one. It's both likely to be drawn a priori (because it's a vowel) and likely to result in a win if Bob drew it.
-
-> It might be interesting to comment out the `condition` statement so you can compare visually the prior (no `condition` statement) to the posterior (with `condition`).
-> 
 > Make sure that your WebPPL answers and hand-computed answers agree -- note that this demonstrates the equivalence between the program view of conditional probability and the distributional view.
 
-### e)
+### c)
 
 Which is higher, $$p(\text{vowel} \mid \text{win})$$ or $$p(\text{consonant} \mid \text{win})$$?
 Answer this using the WebPPL code you wrote *Hint:* use the `checkVowel` function.
@@ -514,20 +508,25 @@ var distribution = Infer({method: 'enumerate'}, function() {
   var letter = sample(letters);
   var position = letterVals.indexOf(letter) + 1; 
   var winProb = 1 / Math.pow(position, 2);
-  condition(...)
-  return ...
+  condition(flip(winProb))
+  return checkVowel(letter)
 });
 viz.auto(distribution);
 ~~~~
 
 A vowel is more likely ($$P(vowel) = 0.7168141592920354$$) than a consonant ($$P(vowel) = 0.28318584070796465 $$)
 
-### f)
+### d)
 
 > What difference do you see between your code and the mathematical notation?
 > What are the advantages and disadvantages of each?
 > Which do you prefer?
 
-The mathematical notation is more precise in some cases (we might get some rounding errors on the computer), but it's less error prone, easier to think about, and much easier to extend. What if we did this with all the letters of the alphabet instead? That would be tedious.
+The mathematical notation is more precise in some cases (we might get some rounding errors on the computer), but it's less error prone, easier to think about, and much easier to extend.
+
+> What if instead of the 4 letters of "game" Bob played a similar game with every letter of the alphabet?
+> Which method would you prefer to make inferences about that version of the game?
+
+Definitely the code!!!! Doing that mathematically would be so tedious...
 
 

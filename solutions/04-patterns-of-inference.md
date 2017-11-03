@@ -123,7 +123,7 @@ var b = z ? 'foo' : 'bar'
 
 B depends causally on A.
 
-Using conditioning, we can show that A and B are statistically dependent. Knowing the value of A changes our distribution over B.
+Using conditioning, we can show that A and B are statistically dependent.
 
 ~~~~ 
 viz.table(Infer({method: "enumerate"}, function() {
@@ -140,7 +140,7 @@ viz.table(Infer({method: "enumerate"}, function() {
   var c = flip(.1)
   var z = flip() ? a : c;
   var b = z ? 'foo' : 'bar'
-//   condition(b) // uncomment to see if there's a change
+//   condition(b=="foo") // uncomment to see if there's a change
   return(a)
 }))
 ~~~~
